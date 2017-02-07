@@ -1,8 +1,9 @@
 // NPM packages
 var fs = require("fs");
-var request = require("request");
-var spotify = require("spotify");
 var twitter = require("twitter");
+var spotify = require("spotify");
+var request = require("request");
+
 
 // grabbing twitter auth keys from keys.js
 var keys = require("./keys.js");
@@ -45,15 +46,19 @@ function spotifyThisSong(){
 
 		spotify.search({ type: 'track', query: songName }, function(err, data) {
 
-		    if ( err ) {
+		    if (err) {
 		        console.log('Error occurred: ' + err);
 		        return;
 		    }
-		 	
-		 	console.log("Artists: " + data.tracks.items[0].artists[0].name);
-		 	console.log("Song: " + data.tracks.items[0].name);
-		 	console.log("Preview: " + data.tracks.items[0].preview_url);
-			console.log("Album: " + data.tracks.items[0].album.name);
+
+		 	function displayInfo() {
+				console.log("Artists: " + data.tracks.items[0].artists[0].name);
+			 	console.log("Song: " + data.tracks.items[0].name);
+			 	console.log("Preview: " + data.tracks.items[0].preview_url);
+				console.log("Album: " + data.tracks.items[0].album.name);
+			}
+
+		 	displayInfo();
 	    
 		});
 
@@ -61,15 +66,12 @@ function spotifyThisSong(){
 
 		spotify.search({ type: 'track', query: 'the sign' }, function(err, data) {
 
-		    if ( err ) {
+		    if (err) {
 		        console.log('Error occurred: ' + err);
 		        return;
 		    }
 
-		 	console.log("Artists: " + data.tracks.items[0].artists[0].name);
-		 	console.log("Song: " + data.tracks.items[0].name);
-		 	console.log("Preview: " + data.tracks.items[0].preview_url);
-			console.log("Album: " + data.tracks.items[0].album.name);
+		 	displayInfo();
 		
 			});
 		};
@@ -79,22 +81,49 @@ function spotifyThisSong(){
 function movieThis(){
 
 	var movieName = process.argv[3];
+	var queryUrl = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&r=json";
 
-	request('http://www.google.com', function (error, response, body) {
-  	if (!error && response.statusCode == 200) {
-    console.log("hello"); // OMDB page not working!
-  		}
-	})
+	request(queryUrl, function(error, response, body) {
+ 	
+  	// If the request is successful
+  	console.log("Title: " + JSON.parse(body).Title);
+  	console.log("Release year: " + JSON.parse(body).Year);
+  	console.log("The movie's rating is: " + JSON.parse(body).imdbRating);
+    console.log("Country Produced in: " + JSON.parse(body).Country);
+    console.log("Language: " + JSON.parse(body).Language);
+    console.log("Plot: " + JSON.parse(body).Plot);
+    console.log("Actors: " + JSON.parse(body).Actors);
+    // console.log("Rotten Tomatoes Rating: " + JSON.parse(body).Language);
+    // console.log("Rotten Tomatoes Url: " + JSON.parse(body).Language);
+
+
+  
+});
+	//request('http://www.google.com', function (error, response, body) {
+  	//if (!error && response.statusCode == 200) {
+    
+  	//	}
+	//})
 }
 
 // function used to call LIRI's commands.
 function doWhatItSays() {
 
-	
+	fs.readFile("random.txt", "utf8", function(error, data){
+
+		if(error){
+			console.log(error);
+		} else {
+			// make it work!!!
+			console.log("DOne!");
+		}
+	})
+
 
 }
 
 switch (commands) {
+	
 	case "my-tweets" : {
 		myTweets();
 		break;
