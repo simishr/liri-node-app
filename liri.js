@@ -1,6 +1,6 @@
 // NPM packages
 var fs = require("fs");
-var twitter = require("twitter");
+var Twitter = require("twitter");
 var spotify = require("spotify");
 var request = require("request");
 
@@ -10,7 +10,7 @@ var keys = require("./keys.js");
 
 var twitterKeys = keys.twitterKeys;
 
-var client = new twitter({
+var client = new Twitter({
 
   consumer_key: twitterKeys.consumer_key,
   consumer_secret: twitterKeys.consumer_secret,
@@ -49,7 +49,8 @@ function spotifyThisSong(){
 		    if (err) {
 		        console.log('Error occurred: ' + err);
 		        return;
-		    }
+
+		    } 
 
 		 	function displayInfo() {
 				console.log("Artists: " + data.tracks.items[0].artists[0].name);
@@ -88,7 +89,7 @@ function movieThis(){
   	// If the request is successful
   	console.log("Title: " + JSON.parse(body).Title);
   	console.log("Release year: " + JSON.parse(body).Year);
-  	console.log("The movie's rating is: " + JSON.parse(body).imdbRating);
+  	console.log("Rating: " + JSON.parse(body).imdbRating);
     console.log("Country Produced in: " + JSON.parse(body).Country);
     console.log("Language: " + JSON.parse(body).Language);
     console.log("Plot: " + JSON.parse(body).Plot);
@@ -106,24 +107,15 @@ function movieThis(){
 	//})
 }
 
-// function used to call LIRI's commands.
-function doWhatItSays() {
+fs.appendFile("log.txt", "\n" + process.argv.slice(2), function(err){
 
-	fs.readFile("random.txt", "utf8", function(error, data){
+	if(err) throw err;
 
-		if(error){
-			console.log(error);
-		} else {
-			// make it work!!!
-			console.log("DOne!");
-		}
-	})
-
-
-}
+	
+});
 
 switch (commands) {
-	
+
 	case "my-tweets" : {
 		myTweets();
 		break;
@@ -140,7 +132,24 @@ switch (commands) {
 	}
 
 	case "do-what-it-says" : {
-		doWhatItSays();
+
+		fs.readFile("random.txt", "utf8", function(error, data){
+
+			if(error) throw error;
+			
+			var data = data.split(",");
+
+			if(data[0] === "my-tweets"){
+				myTweets();	
+
+			} else if(data[0] === "spotify-this-song"){
+				spotifyThisSong(data[1]);
+				
+			} else if(data[0] === "movie-this") {
+				movieThis(data[1]);
+			}
+				
+	});
 		break;
 	}
 
